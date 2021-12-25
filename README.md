@@ -1,5 +1,8 @@
-# flashload
-FlashLoad converts separate HTML pages into a single-page application and makes loading faster by cheating.
+# FlashLoad
+
+FlashLoad converts separate HTML pages into a single-page application and makes navigation faster by preloading pages on mouseover
+
+This library is heavily inspired by [InstantClick](https://instantclick.io), but more lightweight and has more configuration options.
 
 Add FlashLoad to your website.
 ```
@@ -8,6 +11,19 @@ Add FlashLoad to your website.
     FlashLoad.start()
 </script>
 ```
+
+### Story
+
+We wanted to make [Hyvor Blogs](https://blogs.hyvor.com) as fast as possible. We understood that, one overlooked way was preloading content before the user clicks on a link. In most cases, it takes 150ms+ from "hover" to "click" (Test it yourself using [this tool](http://instantclick.io/click-test) at InstantClick). It takes even more time when you are just freely navigating. Also, seeing how fast navigation is in [Gatsby](https://www.gatsbyjs.com/) and [Forem](https://www.forem.com/) (or dev.to), we wanted to implement something like that.
+
+How Gatsby do it is a different story. But, dev.to worked in a similar way like what we wanted: send a XHR (Ajax) request when the user loads (so we eliminate that "hover...click" delay) and fetch the complete HTML pages. For fast connections, pages usually display instantly after the click.
+
+We first used InstantClick, which is the same library Forem uses. However, we wanted implement caching to fetched content to reduce bandwidth and wanted to add some options like delayed progress bar. Another reason to re-write the library was that InstantClick had not been maintained since 2017 (We will be maintaining this library as long as we run Hyvor Blogs)
+
+### NPM?
+
+No, currently, FlashLoad cannot be installed via NPM. Our focus is add it into HTML pages directly.
+
 ### Config
 
 You can define configuration in an object in the `FlashLoad.start()` function.
