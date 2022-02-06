@@ -4,7 +4,7 @@ window.FlashLoad = (function() {
         $started = false,
         $basepath = '',
         $excludeArray = [],
-        $barDelay = 0;
+        $barDelay = 2000;
 
     function start(config) {
         if ($started) return
@@ -18,7 +18,7 @@ window.FlashLoad = (function() {
         if (config.exclude) {
             $excludeArray = config.exclude;
         }
-        if (config.barDelay) {
+        if (typeof config.barDelay === 'number') {
             $barDelay = config.barDelay;
         }
         if (config.bar) {
@@ -27,6 +27,7 @@ window.FlashLoad = (function() {
 
         document.addEventListener('mouseover', handleMouseOver, true)
         document.addEventListener("click", handleClick, true);
+        window.addEventListener("popstate", handlePopState, true)
     }
 
     function linkPreloadable(linkElement) {
@@ -70,12 +71,20 @@ window.FlashLoad = (function() {
         return false;
     }
 
+    /**
+     * Start preloading on mouseover
+     */
     function handleMouseOver(e) {
         var closestLink = e.target.closest('a[href]');
         if (closestLink && linkPreloadable(closestLink)) {
             preload(closestLink);
         }   
     }
+
+    /**
+     * Make sure preloading has started
+     * And display after loading
+     */
     function handleClick(e) {
         if (e.metaKey || e.ctrlKey) return;
 
@@ -84,6 +93,19 @@ window.FlashLoad = (function() {
             e.preventDefault();
             display(closestLink);
         }
+    }
+
+    /**
+     * On popstate change, mainly when back button is clicked,
+     * First, check if we have the page cached. If yes, yay! Just display it.
+     * Otherwise, we will need to reload the page.
+     */
+    function handlePopState(e) {
+        var url = removeHash(location.href);
+        var a = document.createElement("a");
+        a.href = url;
+        if (linkPreloadable(a)) display(a)
+        else location.reload();
     }
 
     function preload(linkElement, displayOnLoad) {
@@ -104,7 +126,12 @@ window.FlashLoad = (function() {
         }
     }
 
-    function PreloadRequest(href, displayOnLoad) {
+    /**
+     * href - URL to preload
+     * displayOnLoad - should display when loaded?
+     * body - when this is set, we don't preload,
+     */
+    function PreloadRequest(href, displayOnLoad, body) {
         var selfx = this;
 
         this.href = href;
@@ -139,7 +166,7 @@ window.FlashLoad = (function() {
         }
 
         this.setError = function(e) {
-            this.status = e;
+            this.status = 'error';
             this.error = e;
         }
 
@@ -230,7 +257,7 @@ window.FlashLoad = (function() {
     function initProgressBar(delay) {
 
         var style = document.createElement('style');
-        style.innerHTML = '#flashload-bar-container{position:fixed;top:0;left:0;width:100%;pointer-events:none;z-index:2147483647;transition:opacity .25s .1s}.flashload-bar{background:#000;width:100%;margin-left:-100%;height:2px;transition:all .25s}';
+        style.innerHTML = '#flashload-bar-container{position:fixed;top:0;left:0;width:100%;pointer-events:none;z-index:2147483647;transition:opacity .25s .1s;opacity:0}.flashload-bar{background:#000;width:100%;margin-left:-100%;height:2px;transition:all .25s}';
         document.head.appendChild(style);
 
             // to avoid showing bar when the navigation fetching is 
@@ -264,20 +291,21 @@ window.FlashLoad = (function() {
         }
 
         function autoIncreaseLength() {
+            if (!hasTimeoutStarted)
+                return;
+
             var val = barLength + 1 + (Math.random() * 2);
 
             if (val >= 98) {
                 val = 98
-            } else if (hasTimeoutStarted) {
-                setTimeout(autoIncreaseLength, 50)
             }
+
             updateTransform(val)
+            setTimeout(autoIncreaseLength, 50)
         }
 
         function start() {
-            // skip starting (only for delayed loading)
-            if  (!hasTimeoutStarted)
-                return;
+            if (!hasTimeoutStarted) {return}
 
             if (document.getElementById(barContainer.id)) {
                 document.body.removeChild(barContainer)
@@ -304,15 +332,15 @@ window.FlashLoad = (function() {
             setTimeout(function() {updateTransform(barLength)}, 0);
             setTimeout(function() {
                 updateTransform(100)
-                barContainer.style.opacity = '0'
-                return
+                setTimeout(function() {
+                    barContainer.style.opacity = '0'
+                }, 100);
             }, 1)
         });
     }
 
     return {
-        start: start,
-        on: null
+        start: start
     };
 
 })();

@@ -20,7 +20,7 @@ How Gatsby do it is a different story. But, dev.to worked in a similar way like 
 
 We first used InstantClick, which is the same library Forem uses. However, we wanted implement caching to fetched content to reduce bandwidth and wanted to add some options like delayed progress bar. Another reason to re-write the library was that InstantClick had not been maintained since 2017 (We will be maintaining this library as long as we run Hyvor Blogs)
 
-### Config
+## Config
 
 You can define configuration in an object in the `FlashLoad.start()` function.
 
@@ -75,17 +75,6 @@ When `data-flashload-skip-preloading` is added to any element, that element and 
 <script data-flashload-skip-replacing></script>
 ```
 
-`data-flashload-skip-replacing` attribute can only be used in `<script>` elements. When used, that script will only be executed on the first load. For example, if you have not noticed, the `<script>` element that wraps the `FlashLoad()` intial function has this attribute. It is because, `FlashLoad.start()` sets event listeners on the `document` element. These events should only be added once.
+`data-flashload-skip-replacing` attribute can only be used in `<script>` elements. When used, that script will only be executed on the first load. For example, the `<script>` element that wraps the `FlashLoad()` initial function has this attribute. It is because, `FlashLoad.start()` sets event listeners on the `document` element, and these events should only be added once.
 
 > Under the hood, FlashLoad fetches HTML pages via AJAX and replaces the content of the body. However, browsers do not run any Javascript in the new body content. Therefore, FlashLoad manually runs them, and if there is a `data-flashload-skip-replacing` attribute, that script will be skipped.
-
-
-
-### InstantClick vs Flashload
-
-Flashload is greatly inspired from InstantClick. There is a few differences between InstantClick and Flashload.
-
-* InstantClick loads the same content over and over if the user hovers in, out, and in again. Flashload fetches content only one time.
-* FlashLoad is more lightweight than InstantClick (mostly because InstantClick has "browser-specific" code old devides and browsers).
-* InstantClick supports loading on "mouseclick", but Flashload does not. It is designed for preloading on "mouseover".
-* In InstantClick, you have to change HTML and add `data-no-instant` to exclude an link from preloading. In Flashload, you manage these settings in the `start()` call config using Javascript.

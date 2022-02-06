@@ -8,5 +8,12 @@
     "url": "git+https://github.com/Hyvor/flashload.git"
   },
   "author": "Supun <supun@hyvor.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^2.67.0",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "scripts": {
+    "build": "rollup --config"
+  }
 }
