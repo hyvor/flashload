@@ -2,6 +2,7 @@ window.FlashLoad = (function() {
 
     var $storage = {},
         $started = false,
+        $currenHref = removeHash(location.href),
         $basepath = '',
         $excludeArray = [],
         $barDelay = 2000;
@@ -102,6 +103,14 @@ window.FlashLoad = (function() {
      */
     function handlePopState(e) {
         var url = removeHash(location.href);
+
+        if ($currenHref === url)
+            return;
+
+        if ($storage[$currenHref]) {
+            $storage[$currenHref].scrollPos = window.scrollY;
+        }
+
         var a = document.createElement("a");
         a.href = url;
         if (linkPreloadable(a)) display(a)
@@ -129,15 +138,16 @@ window.FlashLoad = (function() {
     /**
      * href - URL to preload
      * displayOnLoad - should display when loaded?
-     * body - when this is set, we don't preload,
      */
-    function PreloadRequest(href, displayOnLoad, body) {
+    function PreloadRequest(href, displayOnLoad) {
         var selfx = this;
 
         this.href = href;
 
         this.status = 'loading'; // loading | success | error
         this.error = null;
+
+        this.scrollPos = 0;
 
         this.displayOnLoad = displayOnLoad ? true : false;
 
@@ -195,11 +205,23 @@ window.FlashLoad = (function() {
                 location.href = this.href;
             } else {
                 // replace the page body
-                history.pushState(null, null, this.href);
+
+                const currentLoc = removeHash(location.href)
+                if (currentLoc !== this.href) {
+                    if ($storage[currentLoc]) {
+                        $storage[currentLoc].scrollPos = window.scrollY
+                    }
+
+                    history.pushState(null, null, this.href);
+                }
+
+                $currenHref = this.href;
 
                 // change title and body
                 document.title = this.title;
                 document.documentElement.replaceChild(this.body, document.body)
+
+                scrollTo(0, this.scrollPos);
 
                 // <script>s do not run when replacing child
                 // so run scripts manually
