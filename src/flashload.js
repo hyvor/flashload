@@ -26,7 +26,8 @@ window.FlashLoad = (function() {
             initProgressBar($barDelay);
         }
 
-        document.addEventListener('mouseover', handleMouseOver, true)
+        document.addEventListener("mouseover", handleMouseOver, true)
+        document.addEventListener("touchstart", handleMouseOver, true);
         document.addEventListener("click", handleClick, true);
         window.addEventListener("popstate", handlePopState, true)
     }
