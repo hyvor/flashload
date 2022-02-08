@@ -65,9 +65,9 @@ window.FlashLoad = (function() {
         }
 
         // check all parents
-        while (el = el.parentElement) {
-            if (!el) return false;
-            if (el.hasAttribute('data-flashload-skip-preloading')) return true;
+        while (el) {
+            if (el.hasAttribute('data-flashload-skip')) return true;
+            el = el.parentElement
         }
 
         return false;
@@ -276,7 +276,6 @@ window.FlashLoad = (function() {
     }
 
     // progressbar
-    // from instantclick 3.1.0 (fake transition)
     function initProgressBar(delay) {
 
         var style = document.createElement('style');
@@ -302,9 +301,9 @@ window.FlashLoad = (function() {
 
         barContainer.appendChild(bar);
         document.body.appendChild(barContainer);
+       
 
-            
-
+        // inspired from instantclick 3.1.0 (fake transition)
         function updateTransform(val) {
             if (bar) bar.style.transform = 'translate(' + val + '%)';
             barLength = val;

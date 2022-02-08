@@ -1,16 +1,39 @@
-# FlashLoad
+# Flashload
 
-FlashLoad converts separate HTML pages into a single-page application and makes navigation faster by preloading pages on mouseover
+Flashload does two things:
 
-This library is heavily inspired by [InstantClick](http://instantclick.io), but more lightweight and has more configuration options.
+1. It converts separate HTML pages to single-page application using `history.pushState`
+2. It makes navigation faster by preloading pages on mouseover (on desktop) or touchstart (on mobile) events.
 
-Add FlashLoad to your website.
+This library is heavily inspired by [InstantClick](http://instantclick.io), but more lightweight (<2kb gzipped) and has more configuration options.
+
+## Installation
+
+The best way is to copy the following code to the bottom of your HTML pages.
 ```
 <script src="flashload.js"></script>
-<script data-flashload-skip-preloading>
+<script data-flashload-skip-replacing>
     FlashLoad.start()
 </script>
 ```
+
+## How Flashload Works
+
+When you add Flashload to your website, it adds two event listeners to the `document` element
+
+* `mouseoever` (or `touchstart` for mobile): When a user hovers over a link, Flashload starts "pre-fetching" that page and saves it in javascript memory.
+* `click` event: When a user clicks on a link, Flashload uses `event.preventDefault()` to stop browser from loading the page by itself. Intead, Flashload handles this action using `history.pushState()` (just like a single page app). As the page is already pre-fetched, Flashload simply swaps content, which is super fast than a browser load. However, it is important to know that Flashload only replaces the `<body>` of the HTML document. The `<head>` part remains same across pages.
+## Designing a website for FlashLload
+
+Flashload is best for landing pages, blogs, and other small website, where you can share a single theme (styles).
+
+As only `<body>` is replaced, you have to add your stylesheets and/or scripts to the `<head>` and they should be **"common"** for all pages on your website, where you wish Flashload to handle navigation.
+
+Flashload updates `document.title` too, so making sure that each HTML page has a correct `<title>` tag is enough to make browser title work.
+
+What about other meta tags in `<head>`? Flashload does not update other meta tags (SEO, Social Media) when the user navigates, simply because it is unnecessary. Crawlers (such as search engine robots) "fetch" pages as HTML by sending HTTP requests. They do not "navigate" between pages clicking links. Therefore, Flashload does not change how robots see pages.
+
+Simply saying, Flashload has nothing to do with robots. It is only about **real user experience**.
 
 ## Config
 
