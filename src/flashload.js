@@ -42,10 +42,6 @@ window.FlashLoad = (function() {
         if (
             linkElement.target || // _blank
             linkElement.hasAttribute('download') || // downloadable links
-            (
-                linkElement.href.indexOf('#') > -1 && 
-                removeHash(linkElement.href) == removeHash(location.href)
-            ) || // same page with hash
             linkElement.href.indexOf(startDomainAndPath + '/') != 0 || // different domain
             shouldSkip(linkElement)
         ) {
@@ -132,6 +128,10 @@ window.FlashLoad = (function() {
         if (!$storage[url]) {
             preload(linkElement, true);
         } else {
+            /**
+             * Update href to prevent caching the hash
+             */
+            $storage[url].href = linkElement.href;
             $storage[url].display();
         }
     }
@@ -207,7 +207,7 @@ window.FlashLoad = (function() {
             } else {
                 // replace the page body
 
-                const currentLoc = removeHash(location.href)
+                var currentLoc = removeHash(location.href)
                 if (currentLoc !== this.href) {
                     if ($storage[currentLoc]) {
                         $storage[currentLoc].scrollPos = window.scrollY
@@ -229,6 +229,14 @@ window.FlashLoad = (function() {
                 replaceScripts();
 
                 sendEvent("navigationEnded", {url: this.href})
+
+                var hash = getHash(this.href)
+                if (hash) {
+                    var el = document.getElementById(hash)
+                    el && el.scrollIntoView()
+                } else {
+                    location.hash = '';
+                }
 
             }
         }
@@ -270,6 +278,9 @@ window.FlashLoad = (function() {
     function removeHash(url) {
         var index = url.indexOf('#')
         return index == -1 ? url : url.substr(0, index)
+    }
+    function getHash(url) {
+        return url.split('#')[1];
     }
     function removeSlashes(t) {
         return t.replace(/^\/|\/$/g, '');
