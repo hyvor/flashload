@@ -12,7 +12,6 @@
 <div style="font-size:30px;padding:30px">
 
 <?php
-
 $page = $_GET['page'] ?? 1;
 
 if ($page == 1) {

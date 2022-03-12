@@ -5,7 +5,8 @@ window.FlashLoad = (function() {
         $currenHref = removeHash(location.href),
         $basepath = '',
         $excludeArray = [],
-        $barDelay = 2000;
+        $barDelay = 2000,
+        $lastPreloadRequest = null;
 
     function start(config) {
         if ($started) return
@@ -141,6 +142,14 @@ window.FlashLoad = (function() {
      * displayOnLoad - should display when loaded?
      */
     function PreloadRequest(href, displayOnLoad) {
+
+        $lastPreloadRequest && $lastPreloadRequest.abort();
+
+        /**
+         * Abort requests if they are created very frequently (to save bandwidth)
+         */
+        $lastPreloadRequest = this;
+
         var selfx = this;
 
         this.href = href;
@@ -170,10 +179,18 @@ window.FlashLoad = (function() {
                 if (xhr.status !== 200) {
                     selfx.setError('Request error');
                 } else {
+                    $lastPreloadRequest = null;
                     selfx.setSuccess(xhr.responseText);
                 }
             }
 
+        }
+
+        this.xhr = xhr;
+
+        this.abort = function() {
+            this.xhr.abort();
+            delete $storage[removeHash(this.href)]
         }
 
         this.setError = function(e) {
@@ -196,8 +213,6 @@ window.FlashLoad = (function() {
                 this.display();
             }
         }
-
-        this.xhr = xhr;
 
         this.display = function() {
             if (this.status === 'loading') {
