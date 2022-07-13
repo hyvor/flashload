@@ -163,7 +163,6 @@ if (!(window as any).Flashload) {
              * Save the scroll position of the current document in case the user comes back
              */
             if ($storage[$currenHref]) {
-                console.log("SET POS", window.scrollY, $currenHref)
                 $storage[$currenHref].scrollPos = window.scrollY;
             }
 
@@ -293,7 +292,6 @@ if (!(window as any).Flashload) {
                     document.title = this.title;
                     document.documentElement.replaceChild(this.body, document.body)
 
-                    console.log(this.href, "SHOULD SCROLL TO", this.scrollPos)
                     window.scrollTo(0, this.scrollPos);
 
                     // <script>s do not run when replacing child
