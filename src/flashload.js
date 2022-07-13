@@ -207,6 +207,7 @@ window.FlashLoad = (function() {
             doc.documentElement.innerHTML = text;
 
             this.title = doc.title;
+            this.head = doc.head
             this.body = doc.body;
 
             if (this.displayOnLoad) {
@@ -235,6 +236,7 @@ window.FlashLoad = (function() {
 
                 // change title and body
                 document.title = this.title;
+                document.documentElement.replaceChild(this.head, document.head);
                 document.documentElement.replaceChild(this.body, document.body)
 
                 scrollTo(0, this.scrollPos);
@@ -259,10 +261,10 @@ window.FlashLoad = (function() {
     }
 
     function replaceScripts() {
-        var scripts = document.body.getElementsByTagName("script");
+        var scripts = document.getElementsByTagName("script");
         for (var i = 0; i < scripts.length; i++) {
             var script = scripts[i];
-            if (script.hasAttribute('data-flashload-skip-replacing')) continue;
+            if (script.hasAttribute('data-flashload-skip-script')) continue;
             script.parentNode.replaceChild(cloneScript(script), script);
         }
         function cloneScript(node){
