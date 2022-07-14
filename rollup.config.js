@@ -1,8 +1,13 @@
 import { terser } from "rollup-plugin-terser";
+import typescript from '@rollup/plugin-typescript';
 
 export default {
-    input: "src/flashload.js",
+    input: "src/index.ts",
     output: [
-        { file: "src/flashload.min.js", format: "cjs", plugins: [terser()] },
+        {
+            file: "dist/flashload.min.js",
+            format: "cjs"
+        },
     ],
+    plugins: [typescript(), terser()]
 };

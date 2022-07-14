@@ -11,6 +11,7 @@
     "author": "Supun <supun@hyvor.com>",
     "license": "MIT",
     "devDependencies": {
+        "@rollup/plugin-typescript": "^8.3.3",
         "cypress": "^10.3.0",
         "rollup": "^2.67.0",
         "rollup-plugin-terser": "^7.0.2",
