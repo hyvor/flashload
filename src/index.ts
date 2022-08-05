@@ -194,8 +194,8 @@ if (!(window as any).Flashload) {
 
             error: string | null = null;
 
-            title: string | null = null;
-            body: HTMLElement | null = null;
+            title?: string;
+            body?: HTMLElement;
 
             public constructor(href: string) {
                 this.href = href
@@ -207,6 +207,7 @@ if (!(window as any).Flashload) {
                 const xhr = new XMLHttpRequest();
                 xhr.open('GET', this.href);
                 xhr.timeout = 20000;
+                xhr.setRequestHeader('X-FLASHLOAD', "1")
                 xhr.send();
 
                 xhr.onreadystatechange = () => {
@@ -272,7 +273,7 @@ if (!(window as any).Flashload) {
                 } else {
                     // replace the page body
 
-                    if (this.title === null || this.body === null) {
+                    if (this.title === undefined || this.body === undefined) {
                         console.error('Title and body is not set');
                         return;
                     }
@@ -314,7 +315,7 @@ if (!(window as any).Flashload) {
         }
 
         function replaceScripts() {
-            let scripts = document.getElementsByTagName("script");
+            let scripts = document.body.getElementsByTagName("script");
             for (let i = 0; i < scripts.length; i++) {
                 let script = scripts[i];
                 if (script.hasAttribute(DATA_NAME_SKIP_SCRIPT)) continue;
