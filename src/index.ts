@@ -212,17 +212,18 @@ if (!(window as any).Flashload) {
 
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === 2) { // headers received
-                        if (xhr.getResponseHeader('Content-Type')?.toLowerCase() !== "text/html") {
+                        const contentType = xhr.getResponseHeader('Content-Type') || '';
+                        if (contentType.toLowerCase().split(';')[0] !== "text/html") {
                             this.setError('Not an HTML response');
                         }
                     }
 
                     if (xhr.readyState === 4) { // response received
-                        if (xhr.status !== 200) {
-                            this.setError('Request error');
-                        } else {
+                        if (xhr.status === 200) {
                             $lastPreloadRequest = null;
                             this.setSuccess(xhr.responseText);
+                        } else { // do not set error on abort
+                            this.setError('Request error');
                         }
                     }
 
