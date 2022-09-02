@@ -12,7 +12,7 @@ This library is heavily inspired by [InstantClick](http://instantclick.io), but 
 The best way is to copy the following code to the bottom of your HTML pages.
 ```
 <script src="flashload.js"></script>
-<script data-flashload-skip-replacing>
+<script data-flashload-skip-script>
     FlashLoad.start()
 </script>
 ```
@@ -23,6 +23,13 @@ When you add Flashload to your website, it adds two event listeners to the `docu
 
 * `mouseoever` (or `touchstart` for mobile): When a user hovers over a link, Flashload starts "pre-fetching" that page and saves it in javascript memory.
 * `click` event: When a user clicks on a link, Flashload uses `event.preventDefault()` to stop browser from loading the page by itself. Intead, Flashload handles this action using `history.pushState()` (just like a single page app). As the page is already pre-fetched, Flashload simply swaps content, which is super fast than a browser load. However, it is important to know that Flashload only replaces the `<body>` of the HTML document. The `<head>` part remains same across pages.
+
+## Rules of Flashload
+
+These are the rules to follow when designing a website for Flashload.
+
+* All shared CSS and JS should go into 
+
 ## Designing a website for FlashLload
 
 Flashload is best for landing pages, blogs, and other small website, where you can share a single theme (styles).
@@ -84,15 +91,15 @@ Flashload triggers 4 events.
 When `data-flashload-skip-preloading` is added to any element, that element and all children inside it will be "blacklisted" from preloading. So, all links inside that element will be "skipped" by FlashLoad and will be handled by the browser as usual.
 
 
-### `data-flashload-skip-replacing` Attribute
+### `data-flashload-skip-script` Attribute
 
 ```
-<script data-flashload-skip-replacing></script>
+<script data-flashload-skip-script></script>
 ```
 
-`data-flashload-skip-replacing` attribute can only be used in `<script>` elements. When used, that script will only be executed on the first load. For example, the `<script>` element that wraps the `FlashLoad()` initial function has this attribute. It is because, `FlashLoad.start()` sets event listeners on the `document` element, and these events should only be added once.
+`data-flashload-skip-script` attribute can only be used in `<script>` elements. When used, that script will only be executed on the first load. For example, the `<script>` element that wraps the `FlashLoad()` initial function has this attribute. It is because, `FlashLoad.start()` sets event listeners on the `document` element, and these events should only be added once.
 
-> Under the hood, FlashLoad fetches HTML pages via AJAX and replaces the content of the body. However, browsers do not run any Javascript in the new body content. Therefore, FlashLoad manually runs them, and if there is a `data-flashload-skip-replacing` attribute, that script will be skipped.
+> Under the hood, FlashLoad fetches HTML pages via AJAX and replaces the content of the body. However, browsers do not run any Javascript in the new body content. Therefore, FlashLoad manually runs them, and if there is a `data-flashload-skip-script` attribute, that script will be skipped.
 
 
 ## Story
