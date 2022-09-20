@@ -34,7 +34,7 @@ if (!(window as any).Flashload) {
         let $storage: Record<string, Page> = {},
             $started: boolean = false,
             $currenHref: string = removeHash(location.href),
-            $basepath: string = '',
+            $basePath: string = '',
             $excludeFunction: excludeFunction | undefined,
             $barDelay: number = 2000,
             $lastPreloadRequest: null | Page = null;
@@ -44,7 +44,7 @@ if (!(window as any).Flashload) {
             $started = true;
 
             if (config.basePath) {
-                $basepath = removeSlashes(config.basePath);
+                $basePath = "/" + removeSlashes(config.basePath);
             }
             if (config.exclude) {
                 $excludeFunction = config.exclude;
@@ -70,15 +70,17 @@ if (!(window as any).Flashload) {
 
         function linkPreloadable(linkElement: HTMLAnchorElement) {
 
-            const startDomainAndPath =
-                location.protocol + '//' +
-                location.host +
-                ($basepath ? '/' + removeSlashes($basepath) : "");
+            const currentOrigin = new URL(location.href).origin;
+            const hrefUrl = new URL(linkElement.href);
 
             if (
                 linkElement.target || // _blank
                 linkElement.hasAttribute('download') || // downloadable links
-                linkElement.href.indexOf(startDomainAndPath + '/') !== 0 || // different domain
+                currentOrigin !== hrefUrl.origin ||
+                (
+                    hrefUrl.pathname !== $basePath &&
+                    hrefUrl.pathname.indexOf($basePath + "/") !== 0
+                ) ||
                 shouldSkip(linkElement)
             ) {
                 return false;
