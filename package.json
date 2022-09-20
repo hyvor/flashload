@@ -1,6 +1,6 @@
 {
     "name": "flashload",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "FlashLoad converts separate HTML pages into a single-page application and makes navigation faster by preloading pages on mouseover",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
