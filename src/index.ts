@@ -63,7 +63,11 @@ if (!(window as any).Flashload) {
 
             // add current page
             const page = new Page($currenHref);
-            page.setTitleAndBody(document.title, document.body)
+            page.setPageData(
+                document.title, 
+                document.body, 
+                getAttributesFromElement(document.documentElement)
+            );
             page.status = 'success'
             $storage[$currenHref] = page
         }
@@ -181,6 +185,15 @@ if (!(window as any).Flashload) {
             }
         }
 
+        function getAttributesFromElement(el: Element) {
+            const attributes: Record<string, string> = {};
+            for (let i = 0; i < el.attributes.length; i++) {
+                const attr = el.attributes[i];
+                attributes[attr.name] = attr.value;
+            }
+            return attributes;
+        }
+
         /**
          * href - URL to preload
          * displayOnLoad - should display when loaded?
@@ -198,6 +211,7 @@ if (!(window as any).Flashload) {
 
             title?: string;
             body?: HTMLElement;
+            htmlAttributes?: Record<string, string>;
 
             public constructor(href: string) {
                 this.href = href
@@ -210,6 +224,7 @@ if (!(window as any).Flashload) {
                 xhr.open('GET', this.href);
                 xhr.timeout = 20000;
                 xhr.setRequestHeader('X-FLASHLOAD', "1")
+                xhr.responseType = "document";
                 xhr.send();
 
                 xhr.onreadystatechange = () => {
@@ -223,7 +238,12 @@ if (!(window as any).Flashload) {
                     if (xhr.readyState === 4) { // response received
                         if (xhr.status === 200) {
                             $lastPreloadRequest = null;
-                            this.setSuccess(xhr.responseText);
+
+                            if (!xhr.responseXML) {
+                                return this.setError('No response');
+                            }
+
+                            this.setSuccess(xhr.responseXML);
                         } else { // do not set error on abort
                             this.setError('Request error');
                         }
@@ -248,24 +268,26 @@ if (!(window as any).Flashload) {
                 }
             }
 
-            public setSuccess(text: string) {
+            public setSuccess(doc: Document) {
                 this.status = 'success';
 
                 sendEvent("preloadEnded", {url: this.href})
 
-                const doc = document.implementation.createHTMLDocument('') // new XML document so that we can get <body> without regex
-                doc.documentElement.innerHTML = text;
-
-                this.setTitleAndBody(doc.title, doc.body)
+                this.setPageData(doc.title, doc.body, getAttributesFromElement(doc.documentElement));
 
                 if (this.displayOnLoad) {
                     this.display();
                 }
             }
 
-            public setTitleAndBody(title: string, body: HTMLElement) {
+            public setPageData(
+                title: string, 
+                body: HTMLElement,
+                htmlAttributes: Record<string, string>
+            ) {
                 this.title = title;
                 this.body = body;
+                this.htmlAttributes = htmlAttributes;
             }
 
             public display() {
@@ -276,8 +298,12 @@ if (!(window as any).Flashload) {
                 } else {
                     // replace the page body
 
-                    if (this.title === undefined || this.body === undefined) {
-                        console.error('Title and body is not set');
+                    if (
+                        this.title === undefined ||
+                        this.body === undefined || 
+                        this.htmlAttributes === undefined
+                    ) {
+                        console.error('Title, body, and document element is not set');
                         return;
                     }
 
@@ -295,6 +321,10 @@ if (!(window as any).Flashload) {
                     // change title and body
                     document.title = this.title;
                     document.documentElement.replaceChild(this.body, document.body)
+
+                    for (const [key, value] of Object.entries(this.htmlAttributes)) {
+                        document.documentElement.setAttribute(key, value)
+                    }
 
                     window.scrollTo(0, this.scrollPos);
 

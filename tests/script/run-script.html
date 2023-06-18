@@ -1,16 +1,20 @@
 <body>
-SOME TEXT
+
 <script>
-    window.alert("SHOULD");
+    window.alert("script1");
 </script>
 
 <script data-flashload-skip-script>
-    // window.prompt("SHOULD NOT")
+    window.alert("script2")
 </script>
 
-<script data-flashload-skip-script src="../../dist/index.js"></script>
+<script data-flashload-skip-script src="../../dist/flashload.min.js"></script>
 <script data-flashload-skip-script>
     Flashload.start()
 </script>
+
+<span>
+    Scripts ran
+</span>
 
 </body>
