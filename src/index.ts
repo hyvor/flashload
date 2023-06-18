@@ -335,11 +335,14 @@ if (!(window as any).Flashload) {
                     sendEvent("navigationEnded", {url: this.href})
 
                     const hash = getHash(this.href)
+                    console.log(this.href, hash);
                     if (hash) {
                         const el = document.getElementById(hash)
                         el && el.scrollIntoView()
                     } else {
-                        history.replaceState(null, '', ' ');
+                        // Temporarily disabled this as it works better without it
+                        // history.replaceState(null, '', ' ');
+                        //location.hash = '';
                     }
 
                 }
