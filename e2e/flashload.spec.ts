@@ -17,7 +17,7 @@ test.describe("Flashload", () => {
         // click on a link (should load via flashload)
         await page.getByText('Page 2').click();
 
-        await expect(page.url()).toContain('/page2.html');
+        await page.waitForURL('**/page2.html');
         await expect(page.locator('h1')).toHaveText('Oh, Hi!');
     });
 
@@ -46,7 +46,7 @@ test.describe("Flashload", () => {
         });
 
         await page.getByText('Page 2').click();
-        await expect(page.url()).toContain('/page2.html');
+        await page.waitForURL('**/page2.html');
 
     });
 
@@ -68,7 +68,7 @@ test.describe("Flashload", () => {
 
         await page.getByText('back').click();
 
-        await expect(page.url()).toContain('scrolled.html');
+        await page.waitForURL('**/scrolled.html');
     
         await expect(page.locator('h1#scroll-here')).toBeInViewport();
 
@@ -79,13 +79,14 @@ test.describe("Flashload", () => {
         await page.goto('/tests/hash/index.html');
 
         await page.getByText('To hash').click();
-        await expect(page.url()).toContain('hash.html#hash');
+        await page.waitForURL('**/hash.html#hash');
         await expect(page.locator('h1#hash')).toBeInViewport();
 
         await page.goBack();
-        await expect(page.url()).toContain('index.html');
+        await page.waitForURL('**/index.html');
 
         await page.getByText('To not hash').click();
+        await page.waitForURL('**/hash.html');
         await expect(page.url()).not.toContain('#hash');
         await expect(page.locator('h1#hash')).not.toBeInViewport();
 

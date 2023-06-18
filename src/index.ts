@@ -339,7 +339,7 @@ if (!(window as any).Flashload) {
                         const el = document.getElementById(hash)
                         el && el.scrollIntoView()
                     } else {
-                        location.hash = '';
+                        history.replaceState(null, '', ' ');
                     }
 
                 }
