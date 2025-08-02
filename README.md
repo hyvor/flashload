@@ -7,7 +7,7 @@ Flashload does two things:
 
 This idea is heavily inspired by [InstantClick](http://instantclick.io). This library eliminates the delay between hovering and clicking. You can use [this tool](http://instantclick.io/click-test) to understand there is usually a huge delay between hovering and clicking.
 
-This is a perfect solution for small multi-page websites where you have a shared stylesheet. We use this at production for all blogs in [Hyvor Blogs](https://blogs.hyvor.com). Try navigating through our [blog](https://blogs.hyvor.com/blog) for a live experience.
+This is a perfect solution for small multi-page websites where you have a shared stylesheet. We use this at production for all blogs in [Hyvor Blogs](https://blogs.hyvor.com). Try navigating through our [blog](https://hyvor.com/blog) for a live experience.
 
 ## Installation
 
